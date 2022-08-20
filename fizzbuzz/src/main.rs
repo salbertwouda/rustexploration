@@ -6,7 +6,8 @@ fn main() {
     }
 }
 
-fn fizzbuzz(value:&i32) -> String{
+
+pub fn fizzbuzz(value:&i32) -> String{
     let dividable_by_3 = value % 3 == 0;
     let dividable_by_5 = value % 5 == 0;
     if dividable_by_3 && dividable_by_5 {
@@ -18,4 +19,40 @@ fn fizzbuzz(value:&i32) -> String{
     }
     return value.to_string();
 
+}
+
+
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    fn it_should_return_fizz_for_3() {
+        let value = 3;
+        let result = fizzbuzz(& value);
+        assert_eq!(result, "fizz");
+    }
+
+    #[test]
+    fn it_should_return_buzz_for_5() {
+        let value = 5;
+        let result = fizzbuzz(& value);
+        assert_eq!(result, "buzz");
+    }
+
+    #[test]
+    fn it_should_return_fizz_for_15() {
+        let value = 15;
+        let result = fizzbuzz(& value);
+        assert_eq!(result, "fizzbuzz");
+    }
+
+    #[test]
+    fn it_should_return_1_for_1() {
+        let value = 1;
+        let result = fizzbuzz(& value);
+        assert_eq!(result, "1");
+    }
 }
