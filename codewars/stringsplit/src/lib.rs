@@ -1,5 +1,18 @@
 use std::vec::Vec;
-pub fn solution(s:&str) -> Vec<String> {
+use itertools::Itertools;
+
+fn solution(s: &str) -> Vec<String> {
+    s.chars()
+      .chunks(2)
+      .into_iter()
+      .map(
+        |c| c.pad_using(2, |_| '_')
+             .collect()
+      )
+      .collect()
+}
+
+pub fn solution_basic(s:&str) -> Vec<String> {
 
     let mut current = String::new();
     let mut result = Vec::new(); 
