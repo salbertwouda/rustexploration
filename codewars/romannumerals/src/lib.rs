@@ -2,78 +2,33 @@ use core::num;
 
 
 /// Converts a number to a string representating roman numeral/// 
-pub fn num_as_roman(num: i32) -> String {
-
-  const M: (i32, char) = (1000,'M');
-  const D: (i32, char)= (500,'D'); 
-  const C: (i32, char) = (100,'C');
-  const L: (i32, char) = (50,'L');
-  const X: (i32, char) = (10,'X');
-  const V: (i32, char) = (5, 'V');
-  const I: (i32, char) = (1,'I');
-
-  const ROMAN_NUMERALS_CHARS: [(i32, char); 7] = [
-    M,D,C,L,X,V,I
+pub fn num_as_roman(mut remainder: i32) -> String {
+  
+  static SYMBOLS: [(i32, &str); 13] = [
+    (1000, "M"),
+    (900, "CM"),
+    (500, "D"),
+    (400, "CD"),
+    (100, "C"),
+    (90, "XC"),
+    (50, "L"),
+    (40, "XL"),
+    (10, "X"),
+    (9, "IX"),
+    (5, "V"),
+    (4, "IV"),
+    (1, "I"),
   ];
 
-  fn get_possible_prefixer (c:char) -> Option<(i32, char)>{
-    return match c {
-      'M' => Some(C),
-      'D' => Some(C),
-      'C' => Some(X),
-      'L' => Some(X),
-      'X' => Some(I),
-      'V' => Some(I),
-      _ => None
+  let mut result = String::new();
+  for (number, letters) in SYMBOLS {
+    while remainder >= number {
+      result.push_str(letters);
+      remainder -= number;
     }
   }
-  let mut remainder = num;
-  let mut result:Vec<char> = Vec::<char>::new();
 
-  for (i,roman_numeral) in ROMAN_NUMERALS_CHARS.into_iter().enumerate() {
-    
-    let number_of_divisions = remainder / roman_numeral.0;
-
-    match number_of_divisions {
-      0 => { },
-      1|2|3 => {
-        // apply normal case
-        remainder = remainder % roman_numeral.0;
-        for _n in 0..number_of_divisions{
-          result.push(roman_numeral.1)
-        }
-      }
-      4 => {
-        // apply postfix
-        remainder = remainder % roman_numeral.0;
-        let previous = ROMAN_NUMERALS_CHARS[i-1];
-        result.push(roman_numeral.1);
-        result.push(previous.1);
-      }
-      _ => {
-        panic!("should not happen");
-      }
-    }
-
-    // apply prefix
-    let next_exists = i+1 < ROMAN_NUMERALS_CHARS.len();
-    if next_exists {
-      match get_possible_prefixer(roman_numeral.1) {
-        Some (prefix) => {
-            let prefix_range_lower_boundary = roman_numeral.0 - prefix.0;
-            if remainder >= prefix_range_lower_boundary {
-              result.push(prefix.1);
-              result.push(roman_numeral.1);
-              remainder -= roman_numeral.0 - prefix.0;
-          }
-        }
-        None =>{}
-      }
-    }
-  }
-  
-  let result_string: String = result.iter().collect();
-  return result_string;
+  return result;
 }
 
 #[test]
