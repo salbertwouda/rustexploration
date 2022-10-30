@@ -1,0 +1,155 @@
+
+/// Converts a number to a string representating roman numeral.
+fn num_as_roman(num: i32) -> String {
+  return roman_numeral::from_decimal(num);
+}
+
+mod roman_numeral {
+    use std::iter::Filter;
+
+  pub struct RomanNumeralChar {
+    decimal : i32,
+    letter : char,
+    lower: Option<&'static RomanNumeralChar>,
+    subtractives: mut<&'static RomanNumeralChar>
+  }
+
+  const fn is_subtractive(decimal:i32) -> bool{
+    return if decimal > 10 { is_subtractive(decimal/10) } else { decimal == 1};
+  }
+
+  const fn new(decimal:i32, letter:char, lower: Option<&'static RomanNumeralChar>) -> RomanNumeralChar{
+    return RomanNumeralChar {
+      decimal : decimal,
+      letter: letter,
+      lower : lower,
+      is_subtractive: is_subtractive(decimal),
+    }
+  }
+
+  pub fn from_decimal(num:i32) -> String {
+    let mut leftover :i32 = num;
+    let mut result:Vec<char> = Vec::<char>::new();
+
+    for numeral_char in iterate_descending() {
+        println!("");
+        if leftover <= 0 {
+          break;
+        }
+
+        let number_of_divisions = leftover / numeral_char.decimal;
+        let mut remainder = leftover % numeral_char.decimal;
+        println!("iterate {:?} for {:?} with leftover {:?} = {:?}", (numeral_char.decimal, numeral_char.letter), num, leftover, (number_of_divisions,remainder));
+
+        for subtractive in numeral_char.get_subtractives() {
+          let 
+        }
+        match numeral_char.lower {
+          Some (lower_numeral_char) => {
+            println!("prepend: {:?}", (lower_numeral_char.is_subtractive, remainder == numeral_char.decimal - lower_numeral_char.decimal));
+            if lower_numeral_char.is_subtractive && remainder == numeral_char.decimal - lower_numeral_char.decimal {
+              result.push(lower_numeral_char.letter);
+              result.push(numeral_char.letter);
+            }
+          }
+          None => {
+           println!("NO lower")
+          }
+        }
+
+        if number_of_divisions <= 3 && number_of_divisions > 0 {
+          println!("push {:?} {:?} times", numeral_char.letter, number_of_divisions);
+          (0..number_of_divisions).for_each(|_| result.push(numeral_char.letter));
+        }
+
+        println!("set leftover {}", remainder);
+     
+        leftover = remainder;
+    }
+    println!("");
+
+    let result_string: String = result.iter().collect();
+    return result_string;
+  }
+
+    
+  fn iterate_descending() -> RomanNumeralCharIterator {
+    return RomanNumeralChar::MAX.into_descending_iterator();
+  }
+
+  impl RomanNumeralChar {
+    const fn createUpper(&'static self, decimal:i32, letter:char) -> RomanNumeralChar{
+      return new(decimal, letter, Some (&self))
+    }
+
+    fn get_subtractives(&'static self) -> impl Iterator<Item = &'static RomanNumeralChar>{
+      return self.into_descending_iterator().filter(|x| x.is_subtractive);
+    }
+
+    pub const MAX:RomanNumeralChar = 
+      new(1,'I', None)
+        .createUpper(5, 'V')
+        .createUpper(10,'X')
+        .createUpper(50,'L')
+        .createUpper(100,'C')
+        .createUpper(500,'D')
+        .createUpper(1000,'M');
+
+    pub fn into_descending_iterator(&'static self) -> RomanNumeralCharIterator{
+      return RomanNumeralCharIterator { curr: Some(self)}
+    }
+  }
+
+  pub struct RomanNumeralCharIterator {
+      curr: Option<&'static RomanNumeralChar>,
+  }
+
+  impl Iterator for RomanNumeralCharIterator {
+      type Item = &'static RomanNumeralChar;
+
+      fn next(&mut self) -> Option<Self::Item> {
+          self.curr = match self.curr {
+            Some (current) => current.lower,
+            None => None
+          };
+          return self.curr;
+      }
+  }
+
+    
+
+ 
+
+}
+
+
+#[test]
+fn returns_3_expected() {
+  assert_eq!(num_as_roman(3), "III");
+}
+
+#[test]
+fn returns_4_expected() {
+  assert_eq!(num_as_roman(4), "IV");
+}
+
+#[test]
+fn returns_6_expected() {
+  assert_eq!(num_as_roman(6), "VI");
+}
+#[test]
+fn returns_8_expected() {
+  assert_eq!(num_as_roman(8), "VIII");
+}
+#[test]
+fn returns_9_expected() {
+  assert_eq!(num_as_roman(9), "IX");
+}
+#[test]
+fn returns_11_expected() {
+  assert_eq!(num_as_roman(11), "XI");
+}
+#[test]
+fn returns_15_expected() {
+  assert_eq!(num_as_roman(15), "XV");
+}
